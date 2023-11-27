@@ -18,7 +18,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'refresh']]);
+        $this->middleware('auth:api', ['except' => ['login', 'refresh', 'register']]);
     }
 
     /**
@@ -62,10 +62,8 @@ class AuthController extends Controller
             'password' => Hash::make($request->input('password')),
         ]);
         $user->save();
-        $accessToken = auth()->login($user);
-        $refreshToken = $this->createRefreshToken();
-
-        return $this->respondWithToken($accessToken, $refreshToken);
+        $accessToken = JWTAuth::fromUser($user);
+        return response()->json(['access_token' => $accessToken]);
     }
 
     /**
@@ -143,6 +141,9 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * Create refresh_token.
+     */
     private function createRefreshToken()
     {
         $data = [
