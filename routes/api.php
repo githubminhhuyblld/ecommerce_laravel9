@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,7 +15,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-
+/**
+ * Router Auth
+ */
 Route::group([
     'middleware' => 'api',
     'prefix' => 'auth'
@@ -26,5 +28,13 @@ Route::group([
     Route::post('register', [AuthController::class, 'register']);
     Route::get('me', [AuthController::class, 'me']);
 });
+
+/**
+ * Router User
+ */
+Route::group(['middleware' => ['auth:api']], function () {
+    Route::get('/users', [UserController::class, 'index'])->middleware('role:admin');
+});
+
 
 
