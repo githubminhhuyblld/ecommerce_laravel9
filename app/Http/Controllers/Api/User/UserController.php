@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\User;
 
 use App\Constants\Models\BaseEntityManager;
 use App\Constants\Status;
+use App\Http\Controllers\Controller;
+use App\Http\Helpers\Helper;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
@@ -17,9 +19,11 @@ class UserController extends Controller
     {
         return User::class;
     }
+
     public function __construct()
     {
     }
+
     /**
      * Select all user and paginate
      * 
@@ -34,10 +38,27 @@ class UserController extends Controller
         return response()->json($users);
     }
 
+     /**
+     * Select user by id
+     * 
+     * @param int $id
+     * 
+     * @return response object user
+     */
+    public function selectById($id)
+    {
+        $user = User::find($id);
+        if (!$user) {
+            return Helper::sendNotFoundMessage("User", $id);
+        }
+        return response()->json($user);
+    }
+
     /**
      * Remove a user and update the status to DELETED.
      *
      * @param int $id
+     * 
      * @return \Illuminate\Http\Response
      */
     public function removeUser($id)
@@ -45,7 +66,7 @@ class UserController extends Controller
         try {
             $user = $this->getModelClass()::find($id);
             if (!$user) {
-                return response()->json(['message' => "{$user} not found"], Response::HTTP_NOT_FOUND);
+                return Helper::sendNotFoundMessage("User", $id);
             }
             $this->updateAttribute($id, 'status', Status::DELETED);
             return response()->json(['message' => 'User has been deleted']);
@@ -59,6 +80,7 @@ class UserController extends Controller
      *
      * @param int $id
      * @param \Illuminate\Http\Request $request
+     * 
      * @return \Illuminate\Http\Response
      */
     public function updateUser($id, Request $request)
@@ -66,12 +88,12 @@ class UserController extends Controller
         try {
             $user = $this->getModelClass()::find($id);
             if (!$user) {
-                return response()->json(['message' => "User ID: {$id} not found"], Response::HTTP_NOT_FOUND);
+                return Helper::sendNotFoundMessage("User", $id);
             }
             $name = $request->input('name');
             $numberPhone = $request->input('number_phone');
             $this->updateAttribute($id, 'name', $name);
-            $this->updateAttribute($id, 'number_phone', $numberPhone);  
+            $this->updateAttribute($id, 'number_phone', $numberPhone);
             return  response()->json(['message' => 'Updated successfully']);;
         } catch (Exception $e) {
             return response()->json(['message' => 'An error occurred while updating the user'], Response::HTTP_INTERNAL_SERVER_ERROR);

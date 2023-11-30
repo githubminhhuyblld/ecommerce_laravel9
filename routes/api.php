@@ -1,7 +1,10 @@
 <?php
 
-use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\Api\Auth\AuthController;
+use App\Http\Controllers\Api\Categories\CategoryController;
+use App\Http\Controllers\Api\Product\ProductController;
+use App\Http\Controllers\Api\Shop\ShopController;
+use App\Http\Controllers\Api\User\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -34,9 +37,35 @@ Route::group([
  */
 Route::prefix('v1')->middleware(['auth:api', 'role:admin'])->group(function () {
     Route::get('/users', [UserController::class, 'index']);
+    Route::get('/users/{id}', [UserController::class, 'selectById']);
     Route::delete('/users/{id}', [UserController::class, 'removeUser']);
     Route::put('/users/{id}', [UserController::class, 'updateUser']);
 });
+
+/**
+ * Router Categories
+ */
+Route::prefix('v1')->middleware(['auth:api', 'role:admin'])->group(function () {
+    Route::post('/categories', [CategoryController::class, 'create']);
+
+});
+
+/**
+ * Router Shop
+ */
+Route::prefix('v1')->middleware(['auth:api', 'role:admin'])->group(function () {
+    Route::post('/shops', [ShopController::class, 'create']);
+
+});
+
+/**
+ * Router Product
+ */
+Route::prefix('v1')->middleware(['auth:api', 'role:admin'])->group(function () {
+    Route::post('/products', [ProductController::class, 'create']);
+
+});
+
 
 
 
