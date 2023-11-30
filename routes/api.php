@@ -34,6 +34,8 @@ Route::group([
  */
 Route::group(['middleware' => ['auth:api']], function () {
     Route::get('/users', [UserController::class, 'index'])->middleware('role:admin');
+    Route::delete('/users/{id}', [UserController::class, 'removeUser'])->middleware('role:admin');
+
 });
 
 
