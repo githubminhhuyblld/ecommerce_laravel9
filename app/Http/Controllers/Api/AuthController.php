@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Constants\PermissionConstant;
+use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Request\LoginRequest;
+use App\Http\Requests\Request\RegisterRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -48,21 +51,19 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function register(Request $request)
+    public function register(RegisterRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string',
-            'email' => 'required|string|email|unique:users',
-            'password' => 'required|string|min:6',
-        ]);
         $user = new User([
             'name' => $request->input('name'),
             'email' => $request->input('email'),
             'password' => Hash::make($request->input('password')),
+            'status' => Status::ACTIVE
         ]);
         $user->save();
+        $this -> assignRole($user);
         $accessToken = JWTAuth::fromUser($user);
-        return response()->json(['access_token' => $accessToken]);
+        $refreshToken = $this->createRefreshTokenById($user);
+        return $this->respondWithToken($accessToken, $refreshToken);
     }
 
     /**
@@ -153,5 +154,40 @@ class AuthController extends Controller
         ];
         $refreshToken = JWTAuth::getJWTProvider()->encode($data);
         return $refreshToken;
+    }
+
+    /**
+     * Create refresh_token.
+     */
+    private function createRefreshTokenById($user)
+    {
+        $data = [
+            'user_id' => $user->id,
+            'random' => rand() . time(),
+            'exp' => time() + config('jwt.refresh_ttl')
+        ];
+        $refreshToken = JWTAuth::getJWTProvider()->encode($data);
+        return $refreshToken;
+    }
+
+    /**
+     * Assign role admin
+     */
+    private function assignRole ($user){
+        $user_Role = Role::where('name', 'admin')->first();
+        $user->assignRole($user_Role); 
+        $permissions = [
+            PermissionConstant::USER_LIST,
+            PermissionConstant::USER_VIEW,
+            PermissionConstant::USER_CREATE,
+            PermissionConstant::USER_DELETE,
+            PermissionConstant::USER_UPDATE,
+        ];
+    
+        foreach ($permissions as $permission) {
+            if (!$user->hasPermissionTo($permission)) {
+                $user->givePermissionTo($permission);
+            }
+        }
     }
 }
