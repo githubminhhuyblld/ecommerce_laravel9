@@ -34,6 +34,8 @@ class ProductRequest extends FormRequest
             'new_price' => 'nullable|numeric',
             'color' => 'nullable|string|max:255',
             'size' => 'nullable|string|max:255',
+            'categories' => 'required|array',
+            'shop_id' => 'required|numeric'
         ];
     }
 }

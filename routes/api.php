@@ -47,7 +47,6 @@ Route::prefix('v1')->middleware(['auth:api', 'role:admin'])->group(function () {
  */
 Route::prefix('v1')->middleware(['auth:api', 'role:admin'])->group(function () {
     Route::post('/categories', [CategoryController::class, 'create']);
-
 });
 
 /**
@@ -55,7 +54,6 @@ Route::prefix('v1')->middleware(['auth:api', 'role:admin'])->group(function () {
  */
 Route::prefix('v1')->middleware(['auth:api', 'role:admin'])->group(function () {
     Route::post('/shops', [ShopController::class, 'create']);
-
 });
 
 /**
@@ -63,10 +61,7 @@ Route::prefix('v1')->middleware(['auth:api', 'role:admin'])->group(function () {
  */
 Route::prefix('v1')->middleware(['auth:api', 'role:admin'])->group(function () {
     Route::post('/products', [ProductController::class, 'create']);
-
+    Route::get('/products/{id}', [ProductController::class, 'show']);
+    Route::get('/products/categories/{categoryId}', [ProductController::class, 'getProductsByCategory']);
+    Route::get('/products/shops/{shopId}', [ProductController::class, 'getProductsByShopId']);
 });
-
-
-
-
-
