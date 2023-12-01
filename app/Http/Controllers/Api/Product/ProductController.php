@@ -9,7 +9,6 @@ use App\Models\Product;
 use App\Models\Shop;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
-use PHPUnit\TextUI\Help;
 
 class ProductController extends Controller
 {

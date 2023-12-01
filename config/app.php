@@ -196,6 +196,7 @@ return [
         App\Providers\RouteServiceProvider::class,
         Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
         Spatie\Permission\PermissionServiceProvider::class,
+        \L5Swagger\L5SwaggerServiceProvider::class,
 
     ],
 
@@ -212,6 +213,7 @@ return [
 
     'aliases' => Facade::defaultAliases()->merge([
         'Permission' => Spatie\Permission\PermissionFacade::class,
+        'L5Swagger' => \L5Swagger\L5SwaggerFacade::class,
     ])->toArray(),
 
 ];
