@@ -54,6 +54,7 @@ Route::prefix('v1')->middleware(['auth:api', 'role:admin'])->group(function () {
  */
 Route::prefix('v1')->middleware(['auth:api', 'role:admin'])->group(function () {
     Route::post('/shops', [ShopController::class, 'create']);
+    Route::delete('/shops/{id}', [ShopController::class, 'removeShop']);
 });
 
 /**
@@ -64,4 +65,5 @@ Route::prefix('v1')->middleware(['auth:api', 'role:admin'])->group(function () {
     Route::get('/products/{id}', [ProductController::class, 'show']);
     Route::get('/products/categories/{categoryId}', [ProductController::class, 'getProductsByCategory']);
     Route::get('/products/shops/{shopId}', [ProductController::class, 'getProductsByShopId']);
+    Route::post('/products/{productId}/variants', [ProductController::class, 'addVariant']);
 });
